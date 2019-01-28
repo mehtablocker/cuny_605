@@ -1,0 +1,36 @@
+---
+title: "CUNY 605"
+subtitle: "Week One Discussion Exercise"
+author: "mehtablocker"
+date: "`r format(Sys.Date(), '%B %d, %Y')`"
+output:
+  html_document:
+    toc: true
+    toc_float: true
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+###Exercise C30
+
+$$  x + y = 5 $$
+$$ 2x - y = 3 $$
+
+We can use elimination by multiplying 2 times the first row and subtracting it from the second row to get:
+
+$$  x + y = 5 $$
+$$    -3y = -7 $$
+so y = 7/3 and then via back substitution x = 8/3
+
+
+We can verify this in R:
+```{r}
+A <- rbind(c(1, 1),
+           c(2, -1))
+b <- rbind(5, 3)
+x <- solve(A, b)
+
+print(x)
+```
