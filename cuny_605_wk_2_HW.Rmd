@@ -1,0 +1,117 @@
+---
+title: "CUNY 605"
+subtitle: "Week 2 HW Assignment"
+author: "mehtablocker"
+date: "`r format(Sys.Date(), '%B %d, %Y')`"
+output:
+  html_document:
+    toc: true
+    toc_float: true
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+m2l <- function(matr) {
+    
+    
+    
+    printmrow <- function(x) {
+        
+        
+        
+        ret <- paste(paste(x,collapse = " & "),"\\\\")
+        
+        sprintf(ret)
+        
+    }
+    
+    
+    
+    out <- apply(matr,1,printmrow)
+    
+    out2 <- paste("\\begin{bmatrix}",paste(out,collapse=' '),"\\end{bmatrix}")
+    
+    return(out2)
+    
+}
+```
+
+###Problem Set 1
+
+(1) A^T^A does not equal AA^T^
+
+Assume the following two matrices:
+
+$$\mathbf{A} = \left[\begin{array}
+{rrr}
+A_{11} & A_{12} \\ 
+A_{21} & A_{22}
+\end{array}\right]
+$$
+
+$$\mathbf{A^T} = \left[\begin{array}
+{rrr}
+A_{11} & A_{21} \\ 
+A_{12} & A_{22}
+\end{array}\right]
+$$
+If we multiply AA^T^ the value in the first cell (position 1,1) would be
+$$ A_{11}A_{11}+A_{12}A_{12} $$
+whereas if we multiply A^T^A the value in the first cell would be
+$$A_{11}A_{11}+A_{21}A_{21}$$
+So clearly the two are not equivalent.
+
+(2) A^T^A = AA^T^ only when A is symmetric. Using the above proof as an example, A~12~ would be the same as A~21~ if the matrix were symmetric.
+
+
+###Problem Set 2
+
+```{r problem_2}
+LU_decomp <- function(A){
+  
+  ### Check to make sure matrix is not singular, rectangular, or comprised of zeros on pivot
+  if(sum(diag(A)==0)>0 | qr(A)$rank<max(nrow(A), ncol(A))) {
+    message("Error: This matrix cannot be decomposed.")
+  } else {
+    U <- A
+    # Get U by going column by column and algebraically putting zeros in all positions below the diagonal
+    for (j in 1:(ncol(U)-1)){
+      for (i in (j+1):nrow(U)){
+        if (U[i,j]!=0){U[i,] <- U[i, ] - U[j, ]*(U[i,j]/U[j,j])}
+      }
+    }
+    
+    # Get L by restating L U = A  as  U_inv L_inv = A_inv  ,solving for L_inv, and then taking inverse to get L 
+    U_inv <- solve(U)
+    A_inv <- solve(A)
+    L_inv <- solve(U_inv, A_inv)
+    L <- solve(L_inv)
+    list(L=round(L,2) , U=round(U,2))
+  }
+}
+
+### Test the function
+test_A <- rbind(c(1, 1, 3),
+                c(2, -1, 5),
+                c(-1, -2, 4))
+LU <- LU_decomp(test_A)
+
+```
+
+$$A= `r m2l(test_A)` $$
+
+$$L= `r m2l(LU[["L"]])` $$
+
+$$U= `r m2l(LU[["U"]])` $$
+```{r bad_matrices}
+# try matrix with zero pivot
+test_A <- rbind(c(0,1,1),
+                c(1,2,3),
+                c(7,7,9))
+LU_decomp(test_A)
+
+# try matrix that is singular
+test_A <- rbind(c(1,1,1),
+                c(1,2,3),
+                c(7,7,7))
+LU_decomp(test_A)
