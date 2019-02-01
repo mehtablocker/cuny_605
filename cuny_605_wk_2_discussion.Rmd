@@ -1,0 +1,32 @@
+---
+title: "CUNY 605 Week Two"
+subtitle: "Discussion Exercise"
+author: "mehtablocker"
+date: "`r format(Sys.Date(), '%B %d, %Y')`"
+output:
+  html_document:
+    toc: true
+    toc_float: true
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+###Exercise M30
+
+
+Construct an example to show that the following statement is not true for all square matrices A and B of the same size:
+
+$$  det(A + B) = det(A) + det(B) $$
+```{r}
+A <- rbind(c(3, 5),
+           c(1, -2))
+B <- rbind(c(-1, 2),
+           c(4, 4))
+
+print(det(A) + det(B))
+print(det(A + B))
+```
+
+Can see they are not the same!
