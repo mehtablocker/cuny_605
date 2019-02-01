@@ -11,28 +11,16 @@ output:
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
+
 m2l <- function(matr) {
-    
-    
-    
-    printmrow <- function(x) {
-        
-        
-        
-        ret <- paste(paste(x,collapse = " & "),"\\\\")
-        
-        sprintf(ret)
-        
-    }
-    
-    
-    
-    out <- apply(matr,1,printmrow)
-    
-    out2 <- paste("\\begin{bmatrix}",paste(out,collapse=' '),"\\end{bmatrix}")
-    
-    return(out2)
-    
+  ### Convert R matrix to Latex
+  printmrow <- function(x) {
+    ret <- paste(paste(x,collapse = " & "),"\\\\")
+    sprintf(ret)
+  }
+  out <- apply(matr,1,printmrow)
+  out2 <- paste("\\begin{bmatrix}",paste(out,collapse=' '),"\\end{bmatrix}")
+  return(out2)
 }
 ```
 
