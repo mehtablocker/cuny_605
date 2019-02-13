@@ -1,0 +1,103 @@
+---
+title: "CUNY 605"
+subtitle: "Week 3 HW Assignment"
+author: "mehtablocker"
+date: "`r format(Sys.Date(), '%B %d, %Y')`"
+output:
+  html_document:
+    toc: true
+    toc_float: true
+---
+
+<style type="text/css">
+h3 {
+  color: DarkBlue;
+}
+</style>
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+m2l <- function(matr) {
+  ### Convert R matrix to Latex
+  printmrow <- function(x) {
+    ret <- paste(paste(x,collapse = " & "),"\\\\")
+    sprintf(ret)
+  }
+  out <- apply(matr,1,printmrow)
+  out2 <- paste("\\begin{bmatrix}",paste(out,collapse=' '),"\\end{bmatrix}")
+  return(out2)
+}
+```
+
+###Problem Set 1
+
+```{r ps_1}
+###(1)
+A <- rbind(c( 1, 2, 3, 4),
+           c(-1, 0, 1, 3),
+           c( 0, 1,-2, 1),
+           c( 5, 4,-2, -3))
+qr(A)$rank
+
+###(2)
+# n is the maximum rank for an m x n matrix where m > n
+# 1 is the minimum rank, assuming the matrix is non-zero
+
+###(3)
+B <- rbind(c( 1, 2, 1), 
+           c( 3, 6, 3), 
+           c( 2, 4, 2))
+qr(B)$rank
+
+```
+
+
+###Problem Set 2
+
+```{r ps_2}
+A <- rbind(c( 1, 2, 3), 
+           c( 0, 4, 5), 
+           c( 0, 0, 6))
+```
+
+$$A= `r m2l(A)` $$
+
+$$ A x = \lambda x $$
+$$ A x - \lambda x = 0 $$
+$$ (A - \lambda I) x = 0 $$
+$$ det(A - \lambda I) = 0 $$
+$${A - \lambda I} = \left[\begin{array}
+{rrr}
+1 - \lambda & 2 & 3 \\ 
+0 & 4 - \lambda & 5 \\
+0 & 0 & 6 - \lambda
+\end{array}\right] $$
+
+The determinant of this matrix is just the product of the diagonal because it is an upper triangular matrix. So...
+
+$$ det(A - \lambda I) = (1 - \lambda)(4 - \lambda)(6 - \lambda) = 0 $$
+$$ (4 - \lambda - 4\lambda + \lambda^2)(6 - \lambda) = 0 $$
+
+$$ 24 - 6\lambda - 24\lambda + 6\lambda^2 - 4\lambda + \lambda^2 + 4\lambda^2 - \lambda^3 = 0 $$
+So the characteristic polynomial is:  
+$$ - \lambda^3 + 11\lambda^2 - 34\lambda + 24 = 0 $$
+The eigenvalues are: 1, 4, and 6
+
+Now, plug them in to find eigenvectors:
+
+```{r eigen}
+library(pracma)
+
+# augment the matrices with 0 vector, perform elimination, and solve by setting free variable to 1
+rref( cbind( A-1*diag(3), c(0,0,0)) )
+rref( cbind( A-4*diag(3), c(0,0,0)) )
+rref( cbind( A-6*diag(3), c(0,0,0)) )
+
+```
+
+The eigenvectors are:
+
+$$`r m2l(rbind(1, 0, 0))` $$
+$$`r m2l(rbind(0.67, 1, 0))` $$
+$$`r m2l(rbind(1.6, 2.5, 1))` $$
