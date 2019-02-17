@@ -1,0 +1,110 @@
+---
+title: "CUNY 605"
+subtitle: "Week 4 HW Assignment"
+author: "mehtablocker"
+date: "`r format(Sys.Date(), '%B %d, %Y')`"
+output:
+  html_document:
+    toc: true
+    toc_float: true
+---
+
+<style type="text/css">
+h3 {
+  color: DarkBlue;
+}
+</style>
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+m2l <- function(matr) {
+  ### Convert R matrix to Latex
+  printmrow <- function(x) {
+    ret <- paste(paste(x,collapse = " & "),"\\\\")
+    sprintf(ret)
+  }
+  out <- apply(matr,1,printmrow)
+  out2 <- paste("\\begin{bmatrix}",paste(out,collapse=' '),"\\end{bmatrix}")
+  return(out2)
+}
+```
+
+###Problem Set 1
+
+Singular Value Decomposition: The goal of "diagonalizing" a matrix is to find an orthonormal basis that gets transformed to another orthonormal basis (times some scalar) after applying the linear transformation (i.e., multiplying by the matrix.)  
+
+In other words, if we have a matrix A, we are looking for A V = U D where V and U are matrices of orthonormal basis vectors and D is a diagonal matrix of "scalars."  
+
+Rather than trying to find V and U simultaneously, we can use algebra to arrive at the following formula:   
+A^T^ A = V D^2^ V^T^  
+where V is the eigenvectors and D^2^ is the eigenvalues of the matrix A^T^ A (and we can then just take the square root of D^2^ to get the D scalar values we were originally looking for.)  
+Likewise, A A^T^ = U D^2^ U^T^
+
+```{r ps_1}
+
+# To test, we start with a matrix A
+A <- rbind(c( 1, 2, 3),
+           c(-1, 0, 4))
+
+# Then we create AA^t and A^tA
+X <- A %*% t(A)
+
+Y <- t(A) %*% A
+
+# Using R's eigen() function we can get the eigenvectors and eigenvalues of X and Y
+X_eig <- eigen(X)
+
+Y_eig <- eigen(Y)
+
+# And we compare the output to the svd() function applied to our original matrix A
+A_svd <- svd(A)
+
+# The square root of the eigenvalues of X (and Y too) should be the same as the D in our svd of A:
+sqrt(X_eig$values)
+sqrt(Y_eig$values)
+A_svd$d
+
+# The eigenvectors of X should be the same (or same span) as U
+X_eig$vectors
+A_svd$u
+
+# The eigenvectors of Y should be the same (or same span) as V
+Y_eig$vectors
+A_svd$v
+
+```
+
+
+###Problem Set 2
+
+Create a function that computes the inverse of a matrix using co-factors.
+
+```{r ps_2}
+
+myinverse <- function(A){
+  C <- array(0, dim=dim(A))
+  for (i in 1:nrow(A)){
+    for (j in 1:ncol(A)){
+      C[i,j] <- (-1)^(i+j)*det(A[-i,-j])
+    }
+  }
+  t(C)/det(A)
+}
+
+# Test the function
+A <- rbind(c(1,2,3),
+           c(7,0,4),
+           c(4,9,0))
+
+B <- myinverse(A)
+
+# Compare to solve() function
+B
+solve(A)
+
+# AB=I
+round(A %*% B, 2)
+
+```
+
