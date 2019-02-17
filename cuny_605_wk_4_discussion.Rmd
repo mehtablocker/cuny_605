@@ -1,0 +1,56 @@
+---
+title: "CUNY 605"
+author: "mehtablocker"
+date: "`r format(Sys.Date(), '%B %d, %Y')`"
+output:
+  html_document:
+    toc: yes
+    toc_float: yes
+  pdf_document:
+    toc: yes
+subtitle: Week 4 Discussion
+---
+
+<style type="text/css">
+h3 {
+  color: DarkBlue;
+}
+</style>
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+m2l <- function(matr) {
+  ### Convert R matrix to Latex
+  printmrow <- function(x) {
+    ret <- paste(paste(x,collapse = " & "),"\\\\")
+    sprintf(ret)
+  }
+  out <- apply(matr,1,printmrow)
+  out2 <- paste("\\begin{bmatrix}",paste(out,collapse=' '),"\\end{bmatrix}")
+  return(out2)
+}
+```
+
+###C10 (page 512)
+
+In the vector space C^3^, compute the vector representation $p_B(v)$ for the basis B and vector v below:
+
+```{r c_10}
+
+# B is a collection of three basis vectors
+B <- cbind(c(2,-2,2), c(1,3,1), c(3,5,2))
+B
+
+# v is a column vector
+v <- rbind(11, 5, 8)
+v
+
+# to linearly transform v by B
+v_trans <- B %*% v
+v_trans
+
+# and just to double check, transforming v_trans by B^-1 should get us back to v
+solve(B) %*% v_trans
+
+```
