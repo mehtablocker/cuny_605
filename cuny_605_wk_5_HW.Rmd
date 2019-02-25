@@ -1,0 +1,51 @@
+---
+title: "CUNY 605"
+subtitle: "Week 5 HW Assignment"
+author: "mehtablocker"
+date: "`r format(Sys.Date(), '%B %d, %Y')`"
+output:
+  html_document:
+    toc: true
+    toc_float: true
+---
+
+<style type="text/css">
+h3 {
+  color: DarkBlue;
+}
+</style>
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+```
+
+B and C are each distributed uniformly, in other words f(x) = 1 if 0<=x<=1, and f(x) = 0 if otherwise.  
+This is a probability distribution function because it satisfies the two fundamental properties of  
+1. never being negative and  
+2. integrating to 1 (from negative infinity to positive infinity.)  
+
+###a
+
+Since the cdf of (B+C) between 0 and 1 is given by F(z) = (1/2)z^2^  
+then plugging in 1/2 and 0 for z and subtracting we get **0.125**
+
+###b
+
+Since the cdf of (BC) is given by F(z) = z - z log z  
+then plugging in 1/2 and 0 for z and subtracting we get **0.847**
+
+###c
+
+Since the cdf of |B-C| between 0 and 1 is given by F(z) = 1-(1-z)^2^  
+then plugging in 1/2 and 0 for z and subtracting we get **0.75**
+
+###d
+
+Since the cdf of max(B,C) between 0 and 1 is given by F(z) = z^2^  
+then plugging in 1/2 and 0 for z and subtracting we get **0.25**
+
+###e
+
+Since the cdf of min(B,C) between 0 and 1 is given by F(z) = 1-(1-z)^2^  
+then plugging in 1/2 and 0 for z and subtracting we get **0.75**
