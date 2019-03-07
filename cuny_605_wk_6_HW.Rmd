@@ -1,0 +1,117 @@
+---
+title: "CUNY 605"
+subtitle: "Week 6 HW Assignment"
+author: "mehtablocker"
+date: "`r format(Sys.Date(), '%B %d, %Y')`"
+output:
+  html_document:
+    toc: true
+    toc_float: true
+---
+
+<style type="text/css">
+h3 {
+  color: DarkBlue;
+}
+</style>
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+```
+
+###Q1
+
+129/138
+
+###Q2
+
+20/80 = 1/4
+
+###Q3
+
+1184/1399
+
+###Q4
+
+They are (A) Dependent because P(Losing weight) is likely different than P(Losing weight | Going to the gym)
+
+###Q5
+
+```{r q5}
+choose(8,3)*choose(7,3)*3
+```
+
+###Q6
+
+They are (B) Independent
+
+###Q7
+
+14!/(14-8)! = 121,080,960
+
+###Q8
+
+```{r q8}
+round( (4/22 * 9/23 * 8/22 * 7/21 *6/20) * 4, 4)
+```
+
+###Q9
+
+```{r q9}
+factorial(11)/factorial(7)
+```
+
+###Q10
+
+33 percent of subscribers to a fitness magazine are not over the age of 34.
+
+###Q11
+
+```{r q11}
+p_W <- 0.5^4 * choose(4, 3)
+
+#Step 1.
+EV <- p_W * 97 - (1-p_W) * 30
+EV
+
+#Step 2.
+EV * 559
+```
+
+###Q12
+
+```{r q12}
+p_W <- sum(dbinom(4:0, 9, 0.5))
+
+#Step 1.
+EV <- p_W * 23 - (1-p_W) * 26
+EV
+
+#Step 2.
+EV * 994
+```
+
+###Q13
+
+```{r q13}
+p_liar = 0.2
+p_truther = 1-p_liar
+p_liar_and_detect = p_liar * 0.59
+p_truther_and_detect = p_truther * 0.90
+
+cont_tbl <- data.frame(Detect_Lie = c(p_liar_and_detect, p_truther-p_truther_and_detect), 
+                       Detect_Truth = c(p_liar-p_liar_and_detect, p_truther_and_detect), 
+                       row.names = c("Liar", "Truth_Teller"))
+cont_tbl
+
+###(a)
+cont_tbl["Liar", "Detect_Lie"] / (cont_tbl["Liar", "Detect_Lie"] + cont_tbl["Truth_Teller", "Detect_Lie"])
+
+###(b)
+cont_tbl["Truth_Teller", "Detect_Truth"] / (cont_tbl["Truth_Teller", "Detect_Truth"] + cont_tbl["Liar", "Detect_Truth"])
+
+###(c)
+# This is just P(Liar&Detect_Lie) or P(Liar&Detect_Truth) or P(Truth_Teller&Detect_Lie)
+cont_tbl["Liar", "Detect_Lie"] + cont_tbl["Liar", "Detect_Truth"] + cont_tbl["Truth_Teller", "Detect_Lie"]
+```
