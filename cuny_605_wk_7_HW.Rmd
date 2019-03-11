@@ -1,0 +1,125 @@
+---
+title: "CUNY 605"
+subtitle: "Week 7 HW Assignment"
+author: "mehtablocker"
+date: "`r format(Sys.Date(), '%B %d, %Y')`"
+output:
+  html_document:
+    toc: true
+    toc_float: true
+---
+
+<style type="text/css">
+h3 {
+  color: DarkBlue;
+}
+</style>
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+```
+
+###Problem 1
+
+The CDF of y = the minimum of n Uniform(a,b) _continuous_ random variables is:
+
+$$
+\begin{equation}
+  F(y) = 1 - \Big(\dfrac{b-y}{b-a}\Big)^{n}
+\end{equation}
+$$
+We are interested in the _discrete_ case of y = the minimum of n Uniform(1, k) discrete random variables.
+The CDF is:
+
+$$
+\begin{equation}
+  F(y) = 1 - \Big(1 - \dfrac{y}{k}\Big)^{n}
+\end{equation}
+$$
+
+
+By recognizing that the above formula is an accumulation function, we can use it to get the Probability Mass Function of the discrete case:
+
+$$
+\begin{equation}
+  f(y) = \Big(1 - \dfrac{y-1}{k}\Big)^{n} - \Big(1 - \dfrac{y}{k}\Big)^{n}
+\end{equation}
+$$
+
+###Problem 2
+
+I was a little confused whether the question is asking for:
+
+* Probability of failing after exactly eight years (i.e., on the ninth year) or 
+* Probability of failing after eight or more years
+
+Your hint seems to imply the latter, so that is what I answered below.
+
+<br>
+
+(a) __Geometric__
+
+$$
+\begin{equation}
+  P(x>8) = \Big(1 - \dfrac{1}{10}\Big)^{8}
+\end{equation}
+$$
+```{r geometric}
+p <- 1/10
+1-sum(dgeom(0:7, p))   #the R function starts at 0, so must do 0:7 instead of 1:8
+1/p   #mean
+sqrt((1-p)/p^2)   #sd
+```
+
+<br>
+
+(b) __Exponential__
+
+$$
+\begin{equation}
+  P(x>=8) = e^{-8/10}
+\end{equation}
+$$
+```{r exponential}
+mu <- 1/10
+lambda <- 1/mu
+pexp(8, mu, lower.tail = F)
+1/lambda   #mean
+1/lambda   #sd
+```
+
+<br>
+
+(c) __Binomial__
+
+$$
+\begin{equation}
+  P(x=0) = \Big(\dfrac{9}{10}\Big)^{8}
+\end{equation}
+$$
+```{r binomial}
+p <- 1/10
+n <- 8
+dbinom(0, n, p)
+n*p   #mean
+sqrt(p*(1-p)*n)   #sd
+```
+
+<br>
+
+(d) __Poisson__
+
+$$
+\begin{equation}
+  PMF = \dfrac{\lambda^{k}e^{-\lambda}}{k!}
+\end{equation}
+$$
+```{r poisson}
+p <- 1/10
+n <- 8
+lambda <- n*p
+dpois(0, lambda)
+lambda   #mean
+sqrt(lambda)   #sd
+```
