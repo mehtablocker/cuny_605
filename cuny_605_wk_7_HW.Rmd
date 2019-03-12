@@ -49,12 +49,7 @@ $$
 
 ###Problem 2
 
-I was a little confused whether the question is asking for:
-
-* Probability of failing after exactly eight years (i.e., on the ninth year) or 
-* Probability of failing after eight or more years
-
-Your hint seems to imply the latter, so that is what I answered below.
+_"Your organization owns a machine that has a manufacturer's expected lifetime of 10 years. This means that we expect one failure every 10 years. What is the probability that the machine will fail after 8 years?"_
 
 <br>
 
@@ -82,9 +77,8 @@ $$
 \end{equation}
 $$
 ```{r exponential}
-mu <- 1/10
-lambda <- 1/mu
-pexp(8, mu, lower.tail = F)
+lambda <- 1/10
+pexp(8, lambda, lower.tail = F)
 1/lambda   #mean
 1/lambda   #sd
 ```
