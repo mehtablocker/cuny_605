@@ -1,0 +1,55 @@
+---
+title: "CUNY 605"
+subtitle: "Week 8 HW Assignment"
+author: "mehtablocker"
+date: "`r format(Sys.Date(), '%B %d, %Y')`"
+output:
+  html_document:
+    toc: true
+    toc_float: true
+---
+
+<style type="text/css">
+h3 {
+  color: DarkBlue;
+}
+</style>
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+m2l <- function(matr) {
+  ### Convert R matrix to Latex
+  printmrow <- function(x) {
+    ret <- paste(paste(x,collapse = " & "),"\\\\")
+    sprintf(ret)
+  }
+  out <- apply(matr,1,printmrow)
+  out2 <- paste("\\begin{bmatrix}",paste(out,collapse=' '),"\\end{bmatrix}")
+  return(out2)
+}
+```
+
+###Problem 11, Page 303
+
+$$ \mu / n = 1000/100 = 10 hours $$
+
+###Problem 14, Page 303
+
+$$ \int_{-\infty}^{\infty} f_X(z + y) f_Y(y) dy$$
+$$ = \int_{0}^{z} \lambda e^{-\lambda(z+y)} \lambda e^{-\lambda y} dy$$
+$$ = \int_{0}^{z} \lambda e^{-\lambda(z+y)} \lambda e^{-\lambda y} dy$$
+$$ = \int_{0}^{z} \lambda^2 e^{-\lambda(z+2y)} dy$$
+$$ = (1/2) \lambda e^{-\lambda |z|}$$
+
+###Problem 1, Page 320
+
+Chebyshev's Inequalities:
+
+(a) P(|X-10|>=2) <= (100/3) / (2^2) = 8.333
+
+(b) P(|X-10|>=5) <= (100/3) / (5^2) = 1.333
+
+(c) P(|X-10|>=9) <= (100/3) / (9^2) = 0.412
+
+(d) P(|X-10|>=20) <= (100/3) / (20^2) = 0.083
