@@ -1,0 +1,60 @@
+---
+title: "CUNY 605"
+subtitle: "Week 9 HW Assignment"
+author: "mehtablocker"
+date: "`r format(Sys.Date(), '%B %d, %Y')`"
+output:
+  html_document:
+    toc: true
+    toc_float: true
+---
+
+<style type="text/css">
+h3 {
+  color: DarkBlue;
+}
+</style>
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+```
+
+###Problem 1
+
+Stock price probabilities after 364 days when each day the variance is 0.25:
+
+```{r prob_1}
+
+### (a)
+pnorm(100, mean = 100, sd = sqrt(0.25*364), lower.tail = F)
+
+### (b)
+pnorm(110, mean = 100, sd = sqrt(0.25*364), lower.tail = F)
+
+### (c)
+pnorm(120, mean = 100, sd = sqrt(0.25*364), lower.tail = F)
+
+```
+
+###Problem 2
+
+Moment Generating Function of binomial to calculate mean and variance:
+
+$$ g(t) = \sum_{i=1}^{\infty} e^{tx_i} p(x_i) = (pe^t + q)^n $$
+$$ g'(0) = n(pe^0 + q)^{n-1}pe^0 = np $$
+$$ g''(0) = n(n - 1)p^2 + np $$
+$$ \mu = np $$
+$$ \sigma^2 = g''(0) - g'(0)^2 = n(n - 1)p^2 + np - (np)^2 = np(1-p) $$
+
+###Problem 3
+
+Moment Generating Function of exponential to calculate mean and variance:
+
+$$ g(t) =\int_{-\infty}^{\infty} e^{tx}f(x)dx = \int_{0}^{\infty} e^{tx}\lambda e^{-\lambda x}dx  = \lambda/(\lambda-t) $$
+$$ g^n(0) = n! / \lambda^n $$
+$$ g'(0) = 1 / \lambda $$
+$$ g''(0) = 2 / \lambda^2 $$
+$$ \mu = 1 / \lambda $$
+$$ \sigma^2 = 2 / \lambda^2 - (1 / \lambda)^2 = 1 / \lambda^2$$
+
