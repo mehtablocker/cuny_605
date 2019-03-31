@@ -1,0 +1,132 @@
+---
+title: "CUNY 605"
+subtitle: "Week 10 HW Assignment"
+author: "mehtablocker"
+date: "`r format(Sys.Date(), '%B %d, %Y')`"
+output:
+  html_document:
+    toc: true
+    toc_float: true
+---
+
+<style type="text/css">
+h3 {
+  color: DarkBlue;
+}
+</style>
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+m2l <- function(matr) {
+  ### Convert R matrix to Latex
+  printmrow <- function(x) {
+    ret <- paste(paste(x,collapse = " & "),"\\\\")
+    sprintf(ret)
+  }
+  out <- apply(matr,1,printmrow)
+  out2 <- paste("\\begin{bmatrix}",paste(out,collapse=' '),"\\end{bmatrix}")
+  return(out2)
+}
+```
+
+<br>
+
+Smith is in jail and has 1 dollar; he can get out on bail if he has 8 dollars. A guard agrees to make a series of bets with him. If Smith bets A dollars, he wins A dollars with probability .4 and loses A dollars with probability .6. 
+ 
+Find the probability that he wins 8 dollars before losing all of his money if 
+ 
+ 
+(a) he bets 1 dollar each time (timid strategy)
+(b) he bets, each time, as much as possible but not more than necessary to bring his fortune up to 8 dollars (bold strategy)
+(c) Which strategy gives Smith the better chance of getting out of jail?
+
+<br>
+
+###Part (a)
+
+Solve using markov chain matrix multiplication:
+
+```{r mcm}
+### Define states
+state_labels <- c("broke", 1:7, "free")
+
+### Set up transition matrix
+up_prob <- 0.4
+down_prob <- 0.6
+tr_mat <- matrix(0, dimnames = list(state_labels, state_labels), nrow=length(state_labels), ncol=length(state_labels))
+tr_mat[1,1] <- 1
+tr_mat[length(state_labels),length(state_labels)] <- 1
+diag(tr_mat[-length(state_labels), -1]) <- c(0, rep(up_prob, length(state_labels)-2))
+diag(tr_mat[-1, -length(state_labels)]) <- c(rep(down_prob, length(state_labels)-2), 0)
+
+### Decompose transition matrix into submatrices
+t <- state_labels[-c(1, length(state_labels))]
+r <- c(state_labels[1], state_labels[length(state_labels)])
+I <- tr_mat[r,r]
+Q <- tr_mat[t,t]
+R <- tr_mat[t,r]
+O <- tr_mat[r,t]
+
+### Find expected number of times in each transient state (columns) if starting in a transient state (rows)
+N <- solve(diag(nrow(Q)) - Q)
+
+### Find expected number of times until absorption (column) if starting in a transient state (rows)
+t_abs <- N %*% cbind(rep(1, nrow(N)))
+
+### Find probability of absorption (columns) if starting in a transient state (rows)
+B <- N %*% R
+
+B["1", ]
+```
+
+Compare to empirical answer of multiplying initial state matrix by transition matrix n->inf times
+
+```{r emp}
+### Set up initial state matrix
+in_mat <- matrix(0, nrow=1, ncol=length(state_labels), dimnames = list("initial", state_labels))
+in_mat[, 2] <- 1
+
+### Write function to take a matrix to any power
+mat_power <- function(mat, n){
+  new_mat <- mat
+  flag <- n-1
+  while (flag>0) {
+    new_mat <- new_mat %*% mat
+    flag <- flag - 1
+  }
+  return(new_mat)
+}
+
+in_mat %*% mat_power(tr_mat, 100000)
+
+```
+
+Compare to Monte Carlo simulation
+
+```{r monte}
+calc_final_state <- function(money=1, up_prob=0.4, down_prob=0.6){
+  while (money > 0 & money < 8){
+    money <- money + sample(c(-1,1), 1, prob=c(down_prob, up_prob), replace=T)
+  }
+  return(money)
+}
+
+results <- replicate(100000, calc_final_state())
+table(results)/length(results)
+
+```
+
+There is more statistical error in the simulation, but all three answers are similar.
+
+<br>
+
+###Part (b)
+
+This is just the equivalent of winning three in a row, i.e. 0.4^3 = 0.064
+
+<br>
+
+###Part (c)
+
+The strategy in (b) gives Smith a better chance of getting out of jail.
