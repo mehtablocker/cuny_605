@@ -102,6 +102,20 @@ in_mat %*% mat_power(tr_mat, 100000)
 
 ```
 
+Compare to Gambler's Ruin formula
+
+```{r gr}
+i <- 1
+N <- 8
+p <- 0.4
+q <- 1-p
+
+free <- (1-(q/p)^i) / (1-(q/p)^N)
+broke <- 1 - free
+
+broke; free
+```
+
 Compare to Monte Carlo simulation
 
 ```{r monte}
@@ -117,7 +131,7 @@ table(results)/length(results)
 
 ```
 
-There is more statistical error in the simulation, but all three answers are similar.
+There is more statistical error in the simulation, but all answers are similar.
 
 <br>
 
