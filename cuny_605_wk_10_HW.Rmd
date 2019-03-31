@@ -45,7 +45,7 @@ Find the probability that he wins 8 dollars before losing all of his money if
 
 ###Part (a)
 
-Solve using markov chain matrix multiplication:
+Solve using markov chain matrix absorption:
 
 ```{r mcm}
 ### Define states
