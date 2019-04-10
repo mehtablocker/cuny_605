@@ -1,0 +1,96 @@
+---
+title: "CUNY 605"
+subtitle: "Week 11 Discussion"
+author: "mehtablocker"
+date: "`r format(Sys.Date(), '%B %d, %Y')`"
+output:
+  html_document:
+    toc: true
+    toc_float: true
+---
+
+<style type="text/css">
+h3 {
+  color: DarkBlue;
+}
+</style>
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+```
+
+<br>
+
+__For this example we will get Major League Baseball data from espn.com and fit a simple linear regression.__
+
+<br>
+
+###Libraries
+
+First we load the necessary libraries.
+
+```{r library_load}
+library(dplyr)
+library(rvest)
+library(broom)
+library(ggplot2)
+library(stringr)
+library(knitr)
+```
+
+<br>
+
+###Get the data
+
+Then use rvest to scrape the 2018 MLB standings from espn.com and clean up the team abbreviations using regular expressions.
+
+```{r get_data}
+season <- 2018
+url <- paste0('http://www.espn.com/mlb/standings/_/sort/winpercent/dir/desc/season/', season, '/group/overall')
+url_html <- url %>% read_html()
+html_tables <- url_html %>% html_table(fill=T)
+teams <- html_tables[[2]]
+
+# use regex to extract team acronym - get uppercase letters followed by lowercase, then delete last two characters
+teams <- teams %>% rename(team=1) %>% mutate(team=str_extract_all(team, "[A-Z]{3,4}[a-z]") %>% substr(1, nchar(.)-2))
+
+standings <- html_tables[[4]]
+
+team_standings <- bind_cols(teams, standings)
+team_standings %>% head() %>% kable()
+```
+
+<br>
+
+###Build the model
+
+Run differential should correlate to to winning. We examine a scatterplot and see that a simple linear model looks appropriate.
+
+```{r build_model}
+team_standings %>% 
+  ggplot(aes(x=DIFF, y=W)) + 
+  geom_point() + 
+  geom_smooth(method="lm", se=T) + 
+  labs(x="Run Differential", y="Number of Wins")
+lm_fit <- lm(W ~ DIFF, data=team_standings)
+summary(lm_fit)
+```
+
+The high adjusted R-squared indicates a good fit.
+
+<br>
+
+###Examine the residuals
+
+We use the broom package to put the linear model into a data frame.
+
+```{r residuals}
+lm_df <- augment(lm_fit)
+lm_df %>% 
+  ggplot(aes(x = .fitted, y = .resid)) + 
+  geom_point() + 
+  geom_hline(yintercept = 0)
+```
+
+The residual values appear randomly scattered, as they should in a well fit model.
