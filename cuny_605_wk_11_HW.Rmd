@@ -1,0 +1,70 @@
+---
+title: "CUNY 605"
+subtitle: "Week 11 HW Assignment"
+author: "mehtablocker"
+date: "`r format(Sys.Date(), '%B %d, %Y')`"
+output:
+  html_document:
+    toc: true
+    toc_float: true
+---
+
+<style type="text/css">
+h3 {
+  color: DarkBlue;
+}
+</style>
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+```
+
+<br>
+
+__Linear regression with the Cars dataset.__
+
+<br>
+
+###Load data and libraries
+
+```{r library_load}
+library(dplyr)
+library(broom)
+library(ggplot2)
+library(knitr)
+
+cars_df <- cars
+cars_df %>% head() %>% kable()
+```
+
+<br>
+
+
+###Visualize the data
+
+```{r build_model}
+cars_df %>% 
+  ggplot(aes(x=speed, y=dist)) + 
+  geom_point() + 
+  geom_smooth(method="lm", se=T) + 
+  labs(x="Speed", y="Stopping Distance", title="Cars Dataset")
+lm_fit <- lm(dist ~ speed, data=cars_df)
+summary(lm_fit)
+```
+
+The R-squared is `r round( summary(lm_fit)$r.squared, 2)`.
+
+<br>
+
+###Examine the residuals
+
+```{r residuals}
+lm_df <- augment(lm_fit)
+lm_df %>% 
+  ggplot(aes(x = .fitted, y = .resid)) + 
+  geom_point() + 
+  geom_hline(yintercept = 0)
+```
+
+The residual plot looks decent. There are not obvious signs of non-linearity, though perhaps a bit of heteroscedasticity.
