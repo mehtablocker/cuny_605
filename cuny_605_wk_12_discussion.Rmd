@@ -1,0 +1,99 @@
+---
+title: "CUNY 605"
+subtitle: "Week 12 Discussion"
+author: "mehtablocker"
+date: "`r format(Sys.Date(), '%B %d, %Y')`"
+output:
+  html_document:
+    toc: true
+    toc_float: true
+---
+
+<style type="text/css">
+h3 {
+  color: DarkBlue;
+}
+</style>
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+```
+
+<br>
+
+__For this example we will use data from Wine Enthuisast magazine that was procured from kaggle.com.__
+
+<br>
+
+###Libraries
+
+First we load the necessary libraries.
+
+```{r library_load}
+library(dplyr)
+library(rvest)
+library(broom)
+library(ggplot2)
+library(stringr)
+library(knitr)
+```
+
+<br>
+
+###Get the data
+
+Then we import the data from github.
+
+```{r get_data, cache=T}
+wine_df_raw <- read.csv('https://raw.githubusercontent.com/mehtablocker/cuny_605/master/data_files/winemag_data.csv', stringsAsFactors = F)
+wine_df_raw %>% head(1) %>% kable()
+```
+
+<br>
+
+###Build the model
+
+We will create an indicator variable (is_us) for whether each wine is from the US or not, and then fit a multi-variate regression model to predict the wine rating (points) using is_us, price, price^2^, and an interaction term for is_us and price.
+
+```{r build_model}
+wine_df <- wine_df_raw %>% 
+  mutate(is_us = ifelse(country=="US", 1, 0)) %>% 
+  filter(price<500, !is.na(is_us))   #filter NAs and outlier values
+lm_fit <- lm(points ~ is_us + price + I(price^2) + is_us*price, data=wine_df)
+summary(lm_fit)
+```
+
+The adjusted R-squared of `r summary(lm_fit)$adj.r.squared` indicates a poor fit. The intercept shows that "zeroing" everything out would lead to a rating of `r summary(lm_fit)$coefficients['(Intercept)', 'Estimate']`.
+
+The coefficients for is_us and the interaction term show that being from the US hurts wines at lower price ranges and then hurts even more as price increases. The coefficients for price and price^2^ show that an increase in price helps a wine's rating up to a point, then it starts to hurt. (Keep in mind we filtered out the outlier prices above 500 dollars in order to better fit the overall model.)
+
+<br>
+
+###Examine the residuals
+
+We use the broom package to put the model into a data frame, then view the residuals in a variety of ways.
+
+```{r residuals}
+lm_df <- augment(lm_fit)
+
+### residual plot
+lm_df %>% 
+  ggplot(aes(x = .fitted, y = .resid)) + 
+  geom_point() + 
+  geom_hline(yintercept = 0)
+
+### residual histogram
+lm_df %>% 
+  ggplot(aes(.resid)) + 
+  geom_histogram(bins=30)
+
+### residual qqplot
+lm_df %>% 
+  ggplot(aes(sample = .resid)) + 
+  stat_qq() + 
+  stat_qq_line()
+```
+
+The residual plots show some non-normality and outlier values. Between these as well as the low R-squared value, we determine that this model is not a particularly good fit.
+
