@@ -20,8 +20,10 @@ knitr::opts_chunk$set(echo = TRUE)
 
 ```
 
-
 ###Load modules
+
+We will use Python for this analysis.
+
 ```{python load_modules}
 import pandas as pd
 import numpy as np
@@ -33,27 +35,79 @@ import os
 os.environ['QT_QPA_PLATFORM_PLUGIN_PATH'] = 'C:/Anaconda3/Library/plugins/platforms'
 ```
 
-```{python the_rest}
+
+###Get data
+
+We retrieve the who.csv dataset (hosted on Github) which contains real-world data from 2008.
+
+```{python get_data}
 df = pd.read_csv('https://raw.githubusercontent.com/mehtablocker/cuny_605/master/data_files/who.csv', encoding = "ISO-8859-1")
 df.head()
+```
+
+
+###Exercise 1
+
+Scatterplot and regression of LifeExp~TotExp
+
+```{python ex_1}
 df.plot.scatter('TotExp', 'LifeExp')
+plt.show()
 
 lm_fit = ols('LifeExp ~ TotExp', data = df).fit()
 lm_fit.summary()
+```
 
+We can see from the scatterplot that a linear model does not look like a good choice for these two variables as they are. While the low coefficient p-values of standard errors and p-value of F-statistic show that there is _something_ going on beyond chance, the low R^2^ value confirms that this particular model is not a good fit.
+
+
+###Exercise 2
+
+We now transform the two variables and try again.
+
+```{python ex_2}
 df = df.assign(TotExp_trans = df.TotExp**0.06, LifeExp_trans = df.LifeExp**4.6)
 df.plot.scatter('TotExp_trans', 'LifeExp_trans')
+plt.show()
 
 lm_fit = ols('LifeExp_trans ~ TotExp_trans', data = df).fit()
 lm_fit.summary()
+```
+
+The scatterplot indicates a much more linear relationship. The p-values for the coefficient standard errors and F-statistic have all decreased. And sure enough, the R^2^ has almost tripled, indicating a much better fit.
+
+
+###Exercise 3
+
+When making predictions using the transformed model, we must remember to "undo" the transformation.
+
+```{python ex_3}
 new_df = pd.DataFrame(np.array([1.5, 2.5]), columns = ['TotExp_trans'])
 y_bars = lm_fit.predict(new_df)**(1/4.6)
 print(y_bars)
+```
 
+
+###Exercise 4
+
+We now try a multivariate regression with an interaction term.
+
+```{python ex_4}
 lm_fit = ols('LifeExp ~ PropMD + TotExp + PropMD*TotExp', data = df).fit()
 lm_fit.summary()
+```
+
+Similar to the first model we tried, the p-values of the coefficient standard errors and F-statistic are low, simply indicating that if the true values were 0 then the observed results would be very unlikely due to chance alone. But the low Adjusted R^2^ value indicates the overall model is not a particularly good fit.
+
+
+###Exercise 5
+
+A prediction of Life Expectancy when Proportion of Doctors is 0.03 and Total Expenditure is 14:
+
+```{python ex_5}
 new_df = pd.DataFrame({'PropMD':[0.03], 'TotExp':[14]})
 y_bars = lm_fit.predict(new_df)
 print(y_bars)
-
 ```
+
+Forecasting an average age of over 107 years old does not seem realistic. This is in part due to us choosing values that are at the extremes of each variable, but also due to our model not being particularly accurate.
