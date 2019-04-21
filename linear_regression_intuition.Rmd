@@ -1,0 +1,144 @@
+---
+title: "Linear Regression Intuition"
+subtitle: "Calculus and Linear Algebra"
+author: "mehtablocker"
+date: "`r format(Sys.Date(), '%B %d, %Y')`"
+output:
+  html_document:
+    toc: true
+    toc_float: true
+---
+
+<style type="text/css">
+h3 {
+  color: DarkBlue;
+}
+</style>
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+m2l <- function(matr) {
+  ### Convert R matrix to Latex
+  printmrow <- function(x) {
+    ret <- paste(paste(x,collapse = " & "),"\\\\")
+    sprintf(ret)
+  }
+  out <- apply(matr,1,printmrow)
+  out2 <- paste("\\begin{bmatrix}",paste(out,collapse=' '),"\\end{bmatrix}")
+  return(out2)
+}
+
+```
+
+###Hypothetical data
+
+We start with two data vectors, x and y.
+
+```{r x_and_y}
+x <- c(9, 3, 12, 1, 4)
+y <- c(6, 7, 10, 4, 4)
+plot(x, y)
+```
+
+###Calculus explanation
+
+We are trying to a draw a straight line with the formula:
+
+$$ y = mx + b $$
+
+or equally:
+
+$$ y = b_0 + b_1 x $$
+
+Upon finding b_0 and b_1 we can plug x into the right hand side of the equation to find "y_predicted." In order to find the best b_0 and b_1, in least squares method we are trying to minimize squared error. In other words, we are trying to minimize:
+
+$$ error = \sum(y_{predicted} - y)^2 $$
+
+If we picture a graph of y_predicted plotted against error (ie, various different errors based on various different values for the model), this will be a parabola. We want the bottom of the parabola, the point at which error is minimized.
+
+Using calculus, we can find that by taking the first derivative and setting it to zero. Since y_predicted is actually composed of b_0 and b_1, we actually have to do this twice. i.e., we take the partial derivative of b_0 and the partial derivative of b_1, and then solve the two equations.
+
+sum((y_predicted - y)^2) = sum((b_0 + b_1 * x - y)^2)
+
+The partial derivative of (b_0 + b_1 * x - y)^2 to b_1 is:
+
+$$ 2 (b_0 + b_1 x - y) x $$
+
+The partial derivative of (b_0 + b_1 * x - y)^2 to b_0 is:
+
+$$ 2 (b_0 + b_1 x - y) $$
+
+(i.e., you just take the first derivative of b_0 or b_1 and treat the other as a constant)
+
+Plugging in our actual x and y values from above:
+
+Partial derivative of b_1:
+
+$$ 0 = (2*b_0*1 + 2*b_1*1^2 - 2*4*1) + (2*b_0*3 + 2*b_1*3^2 - 2*7*3) + (2*b_0*4 + 2*b_1*4^2 - 2*4*4) + (2*b_0*9 + 2*b_1*9^2 - 2*6*9) + (2*b_0*12 + 2*b_1*12^2 - 2*10*12) $$
+$$ 58*b_0 + 502*b_1 - 430 = 0 $$
+Partial derivative of b_0:
+
+$$ 0 = 2*(b_0 + b_1 * 1 - 4) + 2*(b_0 + b_1 * 3 - 7) + 2*(b_0 + b_1 * 4 - 4) + 2*(b_0 + b_1 * 9 - 6) + 2*(b_0 + b_1 * 12 - 10) $$
+$$ 10*b_0 + 58*b_1 - 62 = 0 $$
+
+So now we just solve the two equation system:
+
+$$ 58 b_0 + 502 b_1 - 430 = 0 $$
+$$ 10 b_0 + 58 b_1 - 62 = 0 $$
+
+Doing that we get 0.4251208 for b_1 and 3.7343 for b_0.
+
+We check our answer against the lm() function in R:
+
+```{r lm_func}
+lm(y ~ x)
+```
+
+We see they are the same.
+
+### Linear algebra explanation
+
+We can think of x as a vector and y as another vector. 
+
+```{r xy_vecs}
+x <- cbind(x)
+y <- cbind(y)
+x
+y
+```
+
+If y were a perfect linear combination of x, there would be some scalar, we'll call it a_1, that we could multiply to x in order to get to y. In other words:
+
+$$ a_1 x = y $$
+
+To allow for an intercept, we can add a_0 to the equation:
+
+$$ a_0 + a_1 x = y $$
+
+In other words:
+
+$$ a_0 `r m2l(cbind(rep(1, 5)))` + a_1 `r m2l(x)` = `r m2l(y)` $$
+
+or equally:
+
+$$ `r m2l(cbind(rep(1,5), x))` \begin{bmatrix}a_0\\a_1\end{bmatrix} = `r m2l(y)` $$
+
+So we are essentially solving the typical Ax = b formula. To solve this we would multiply both sides on the left by A^{-1}^ , but the problem here is that A is not invertible. So we first have to multiply by A^T^ and then multiply by the inverse of A^T^A .
+
+Step by step:
+
+$$ A x = b $$
+$$ A^T A x = A^T b $$
+$$ (A^T A)^{-1} A^T A x = (A^T A)^{-1} A^T b $$
+$$ x = (A^T A)^{-1} A^T b $$
+
+We do this in R to see if we get the same answer as before.
+
+```{r ax_b}
+A <- cbind(rep(1,5), x)
+b <- y
+solve(t(A) %*% A) %*% t(A) %*% b
+```
+
+We do.
