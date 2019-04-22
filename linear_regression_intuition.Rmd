@@ -53,21 +53,22 @@ $$ y = b_0 + b_1 x $$
 
 Upon finding b_0 and b_1 we can plug x into the right hand side of the equation to find "y_predicted." In order to find the best b_0 and b_1, in least squares method we are trying to minimize squared error. In other words, we are trying to minimize:
 
+$$ y_{predicted} = b_0 + b_1 x $$
 $$ error = \sum(y_{predicted} - y)^2 $$
 
 If we picture a graph of y_predicted plotted against error (ie, various different errors based on various different values for the model), this will be a parabola. We want the bottom of the parabola, the point at which error is minimized.
 
 Using calculus, we can find that by taking the first derivative and setting it to zero. Since y_predicted is actually composed of b_0 and b_1, we actually have to do this twice. i.e., we take the partial derivative of b_0 and the partial derivative of b_1, and then solve the two equations.
 
-sum((y_predicted - y)^2) = sum((b_0 + b_1 * x - y)^2)
+The partial derivative of (b_0 + b_1 * x - y)^2 for b_1 is:
 
-The partial derivative of (b_0 + b_1 * x - y)^2 to b_1 is:
+$$ \sum 2 (b_0 + b_1 x - y) x $$
+$$ = (\sum 2 x) b_0 + (\sum 2 x^2) b_1 - (\sum 2 x y) $$
 
-$$ 2 (b_0 + b_1 x - y) x $$
+The partial derivative of (b_0 + b_1 * x - y)^2 for b_0 is:
 
-The partial derivative of (b_0 + b_1 * x - y)^2 to b_0 is:
-
-$$ 2 (b_0 + b_1 x - y) $$
+$$ \sum 2 (b_0 + b_1 x - y) $$
+$$ = (\sum 2 x^0) b_0 + (\sum 2 x) b_1 - (\sum 2 y) $$
 
 (i.e., you just take the first derivative of b_0 or b_1 and treat the other as a constant)
 
@@ -77,6 +78,7 @@ Partial derivative of b_1:
 
 $$ 0 = (2*b_0*1 + 2*b_1*1^2 - 2*4*1) + (2*b_0*3 + 2*b_1*3^2 - 2*7*3) + (2*b_0*4 + 2*b_1*4^2 - 2*4*4) + (2*b_0*9 + 2*b_1*9^2 - 2*6*9) + (2*b_0*12 + 2*b_1*12^2 - 2*10*12) $$
 $$ 58*b_0 + 502*b_1 - 430 = 0 $$
+
 Partial derivative of b_0:
 
 $$ 0 = 2*(b_0 + b_1 * 1 - 4) + 2*(b_0 + b_1 * 3 - 7) + 2*(b_0 + b_1 * 4 - 4) + 2*(b_0 + b_1 * 9 - 6) + 2*(b_0 + b_1 * 12 - 10) $$
@@ -124,7 +126,7 @@ or equally:
 
 $$ `r m2l(cbind(rep(1,5), x))` \begin{bmatrix}a_0\\a_1\end{bmatrix} = `r m2l(y)` $$
 
-So we are essentially solving the typical Ax = b formula. To solve this we would multiply both sides on the left by A^{-1}^ , but the problem here is that A is not invertible. So we first have to multiply by A^T^ and then multiply by the inverse of A^T^A .
+So we are essentially solving the typical Ax = b formula. To solve this we would multiply both sides on the left by A^-1^ , but the problem here is that A is not invertible. So we first have to multiply by A^T^ and then multiply by the inverse of A^T^A .
 
 Step by step:
 
