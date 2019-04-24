@@ -68,3 +68,26 @@ Plugging in 4 and -1 and subtracting:
 
 Unless there is information missing (no price or demand curve formula is given), selling all 110 irons in one order would minimize costs.
 
+###6. Integration by Parts
+
+$$ \int ln(9x) x^6 dx $$
+$$ \int f(x) g'(x) dx = f(x) g(x) - \int f'(x) g(x) dx $$
+f(x) = ln(9x)  
+f'(x) = 1/x  
+g'(x) = x^6^  
+g(x) = x^7^/7  
+$$ ln(9x) \frac{x^7}{7} - \int \frac{1}{x} \frac{x^7}{7} dx $$
+$$ ln(9x) \frac{x^7}{7} - \frac{1}{7} \int x^6 dx $$
+$$ ln(9x) \frac{x^7}{7} - \frac{1}{7} \frac{x^7}{7} + C $$
+$$ \frac{x^7}{49}(7 ln(9x) - 1)  + C $$
+
+###7. Definite Integral
+
+$$ \int_1^{e^6} \frac{1}{6x} dx $$
+$$ \frac{1}{6} \int x^{-1} dx $$
+$$ \frac{ln x}{6} $$
+Now plugging in e^6^ and 1 and subtracting:
+
+log(exp(6))/6 - log(exp(1))/6 = __`r log(exp(6))/6 - log(exp(1))/6`__
+
+It is not a probability distribution because the area is not 1.
