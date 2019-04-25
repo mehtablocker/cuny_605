@@ -31,7 +31,7 @@ $$ = \frac{-4}{7} \int e^u d u $$
 $$ = \frac{-4}{7} e^u + C $$
 $$ = \frac{-4}{7} e^{-7x} + C $$
 
-###2. Integration of 1/x
+###2. Integration of 1/x^n^
 
 $$ \int -\frac{3150}{t^4} - 220 $$
 $$ = \int -3150 t^{-4} - 220 $$
