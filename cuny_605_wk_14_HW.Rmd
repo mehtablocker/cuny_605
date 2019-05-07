@@ -1,0 +1,69 @@
+---
+title: "CUNY 605"
+subtitle: "Week 14 HW Assignment"
+author: "mehtablocker"
+date: "`r format(Sys.Date(), '%B %d, %Y')`"
+output:
+  html_document:
+    toc: true
+    toc_float: true
+---
+
+<style type="text/css">
+h3 {
+  color: DarkBlue;
+}
+</style>
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+```
+
+<br>
+
+__Taylor Series expansions__
+
+<br>
+
+###1
+
+$$ f(x) = \frac{1}{(1-x)} $$
+$$ f'(x) = \frac{1}{(1-x)^2} $$
+$$ f''(x) = \frac{2}{(1-x)^3} $$
+$$ f'''(x) = \frac{6}{(1-x)^4} $$
+$$ f^{(n)}(x) = \frac{n!}{(1-x)^{n+1}} $$
+$$ f^{(n)}(0) = n! $$
+So, using Taylor Series formula...
+
+$$ \frac{1}{(1-x)} = \sum \frac{f^{(n)}(0)}{n!}x^n $$
+$$ = \sum \frac{n!}{n!}x^n $$
+$$ = \sum_{n=0}^{\infty} x^n $$
+
+###2
+
+$$ f(x) = e^x $$
+$$ f'(x) = e^x; f''(x) = e^x; f'''(x) = e^x $$
+$$ f^{(n)}(x) = e^x $$
+$$ f^{(n)}(0) = 1 $$
+So, using Taylor Series formula...
+
+$$ e^x = \sum \frac{f^{(n)}(0)}{n!}x^n $$
+$$ = \sum \frac{1}{n!}x^n $$
+
+###3
+
+$$ f(x) = ln(1 + x) $$
+$$ f'(x) = \frac{1}{(x + 1)} $$
+$$ f''(x) = \frac{-1}{(x + 1)^2} $$
+$$ f'''(x) = \frac{2}{(x + 1)^3} $$
+$$ f''''(x) = \frac{-6}{(x + 1)^4} $$
+$$ f^{(n)}(x) = \frac{(-1)^{n-1}(n-1)!}{(x + 1)^n} $$
+$$ f^{(n)}(0) = (-1)^{n-1}(n-1)! $$
+So, using Taylor Series formula...
+
+$$ ln(x + 1) = \sum \frac{f^{(n)}(0)}{n!}x^n $$
+$$ = \sum \frac{(-1)^{n-1}(n-1)!}{n!}x^n $$
+And after a few steps...
+
+$$ = x - \frac{x^2}{2} + \frac{x^3}{3} - \frac{x^4}{4} ... $$
