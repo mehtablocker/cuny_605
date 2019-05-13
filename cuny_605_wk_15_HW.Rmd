@@ -1,0 +1,97 @@
+---
+title: "CUNY 605"
+subtitle: "Week 15 HW Assignment"
+author: "mehtablocker"
+date: "`r format(Sys.Date(), '%B %d, %Y')`"
+output:
+  html_document:
+    toc: true
+    toc_float: true
+editor_options: 
+  chunk_output_type: console
+---
+
+<style type="text/css">
+h3 {
+  color: DarkBlue;
+}
+</style>
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+```
+
+###1
+
+Regression equation
+
+```{r ex_1}
+x <- c(5.6, 6.3, 7, 7.7, 8.4)
+y <- c(8.8, 12.4, 14.8, 18.2, 20.8)
+lm_fit <- lm(y ~ x)
+summary(lm_fit)
+```
+
+$$ y = `r round(summary(lm_fit)$coefficients[1,1],2)` + `r round(summary(lm_fit)$coefficients[2,1],2)` x $$
+
+###2
+
+Critical points (minima, maxima, saddle points)
+
+$$ f(x, y) = 24x - 6xy^2 - 8y^3 $$
+
+Find partial derivatives:
+
+$$ f_x(x, y) = 24 - 6y^2 $$
+$$ f_y(x, y) = -12xy - 24y^2 $$
+Set both equal to zero and solve.
+
+$$ y^2 = 4 ; y = \pm 2 $$
+$$ x = -4 $$
+Plug into original equation to get:  
+
+__(-4, 2, -64) and (-4, -2, 64)__
+
+###3
+
+__Step One__  
+
+Take the two formulas for units sold, multiply them each by dollars, and add them.
+
+$$ revenue(x, y) = x(81 - 21x + 17y) + y(40 + 11x - 23y) $$
+$$ = 81x - 21x^2 + 17xy + 40y + 11xy - 23y^2 $$
+$$ = -21x^2 - 23y^2 + 28xy + 81x + 40y $$
+
+__Step Two__  
+
+$$ revenue(2.3, 4.1) = 116.62 $$
+
+###4
+
+Minimize costs by finding the partial derivatives of the cost function, then setting them equal to each other, and substituting back into the constraint formula.
+
+$$ C(x, y) = \frac{1}{6} x^2 + \frac{1}{6} y^2 + 7x + 25y + 700 $$
+$$ C_x(x,y) = \frac{1}{3} x + 7 $$
+$$ C_y(x,y) = \frac{1}{3} y + 25 $$
+$$ \frac{1}{3} x + 7 = \frac{1}{3} y + 25 $$
+$$ x = y + 54 $$
+
+Constraint formula:
+
+$$ x + y = 96 $$
+$$ y + 54 + y = 96 $$
+$$ y = 21 $$
+$$ x = 75 $$
+
+###5
+
+Double integral
+
+$$ \int_2^4 \int_2^4 (e^{8x + 3y}) dy dx $$
+$$ = \int_2^4 ([\frac{1}{3}e^{8x + 3y}] \rvert_2^4) dx $$
+$$ = \int_2^4 (\frac{1}{3}e^{8x + 12} - \frac{1}{3}e^{8x + 6}) dx $$
+$$ = \int_2^4 (\frac{1}{3}e^{8x}(e^{12} - e^{6})) dx $$
+$$ = (\frac{1}{24}e^{8x}(e^{12} - e^{6})) \rvert_2^4 $$
+$$ = (\frac{1}{24}e^{32}(e^{12} - e^{6}) - \frac{1}{24}e^{16}(e^{12} - e^{6})) $$
+= __534,155,900,000,000,000__
