@@ -1,0 +1,204 @@
+---
+title: "CUNY 605"
+subtitle: "Final Project"
+author: "mehtablocker"
+date: "`r format(Sys.Date(), '%B %d, %Y')`"
+output:
+  html_document:
+    toc: true
+    toc_float: true
+editor_options: 
+  chunk_output_type: console
+---
+
+<style type="text/css">
+h3 {
+  color: DarkBlue;
+}
+</style>
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+```
+
+<br>
+
+###Load libraries
+
+```{r load_libraries, message=FALSE, warning=FALSE}
+library(dplyr)
+library(tidyr)
+library(tibble)
+library(ggplot2)
+library(broom)
+library(knitr)
+```
+
+###Problem 1
+
+```{r p1}
+N <- 6
+X <- runif(10000, 1, N)
+Y <- rnorm(10000, (N+1)/2, (N+1)/2)
+
+x <- median(X)
+y <- unname(quantile(Y)[2])
+
+### a. The probability that X is greater than the median of X given X is greater than the first quartile of Y
+mean(X>x)*mean(X>y)/mean(X>y)
+
+### b. The probability that X is greater than the median of X and Y is greater than the first quartile of Y
+mean(X>x)*mean(Y>y)
+
+### c. The probability that X is less than the median of X given X is greater than the first quartile of Y
+mean(X<x)*mean(X>y)/mean(X>y)
+
+### Two-Way Table:
+df <- tibble(rowname = c("X>x", "X<=x"), 
+             `Y>y`=c(mean(Y>y)*mean(X>x), mean(Y>y)*mean(X<=x)), 
+             `Y<=y`=c(mean(Y<=y)*mean(X>x), mean(Y<=y)*mean(X<=x))) %>% 
+  column_to_rownames()
+df %>% kable()
+# Can see that the upper left value is 0.375, which is the joint probability.
+# Can also see that the marginal prob for first row is 0.5 and for first column is 0.75. And 0.5*0.75 = 0.375
+
+### Independence tests
+fisher.test(x = df %>% as.matrix()*10000)
+chisq.test(x = df %>% as.matrix()*10000, p = df %>% as.matrix())
+# Although the Fisher test may be more appropriate here, there is no difference in result. i.e., Both tests give the same p-value of 1, indicating that there is not evidence of an association. (In other words, there is no reason to reject that they are independent.)
+
+```
+
+<br>
+
+###Problem 2
+
+Kaggle house prices competition
+
+```{r p2}
+
+### Load data from Github
+train_df <- read.csv('https://raw.githubusercontent.com/mehtablocker/cuny_605/master/data_files/train.csv')
+test_df <- read.csv('https://raw.githubusercontent.com/mehtablocker/cuny_605/master/data_files/test.csv')
+train_df %>% head() %>% kable()
+
+### Summary and histogram of target variable
+train_df %>% select(SalePrice) %>% summary()
+train_df %>% ggplot(aes(SalePrice)) + geom_histogram(bins=20)
+
+### Scatterplot matrix of select variables
+train_df %>% select(YrSold, GrLivArea, SalePrice) %>% plot()
+
+### Correlation matrix of select variables
+cor_mat <- train_df %>% select(YrSold, GrLivArea, SalePrice) %>% cor()
+round(cor_mat, 2)
+
+### Confidence intervals for correlations
+round(cor.test(train_df$GrLivArea, train_df$SalePrice, conf.level = 0.8)$conf.int[1:2], 2)
+round(cor.test(train_df$YrSold, train_df$SalePrice, conf.level = 0.8)$conf.int[1:2], 2)
+round(cor.test(train_df$YrSold, train_df$GrLivArea, conf.level = 0.8)$conf.int[1:2], 2)
+# Zero is not in the interval for the GrLivArea/SalePrice pair, but it is for the other two, indicating that we cannot be sure the correlation was not due to chance alone.
+
+# In general I think it is very important to be cautious of familywise error, i.e., finding spurious correlations, particularly when dealing with over 75 different variables, The higher the number of variables, the higher the probability of finding correlations by chance. We can mitigate this risk by using domain knowledge for variable selection and/or applying sensible Bayesian priors.
+
+### Linear Algebra
+prec_mat <- solve(cor_mat)
+prec_mat
+round(cor_mat %*% prec_mat, 2)
+round(prec_mat %*% cor_mat, 2)
+
+LU_decomp <- function(A){
+  
+  ### Check to make sure matrix is not singular, rectangular, or comprised of zeros on pivot
+  if(sum(diag(A)==0)>0 | qr(A)$rank<max(nrow(A), ncol(A))) {
+    message("Error: This matrix cannot be decomposed.")
+  } else {
+    U <- A
+    # Get U by going column by column and algebraically putting zeros in all positions below the diagonal
+    for (j in 1:(ncol(U)-1)){
+      for (i in (j+1):nrow(U)){
+        if (U[i,j]!=0){U[i,] <- U[i, ] - U[j, ]*(U[i,j]/U[j,j])}
+      }
+    }
+    
+    # Get L by restating L U = A  as  U_inv L_inv = A_inv  ,solving for L_inv, and then taking inverse to get L 
+    U_inv <- solve(U)
+    A_inv <- solve(A)
+    L_inv <- solve(U_inv, A_inv)
+    L <- solve(L_inv)
+    list(L=round(L,2) , U=round(U,2))
+  }
+}
+
+LU_decomp(cor_mat)
+LU_decomp(prec_mat)
+
+
+### Check to see which variables are right skewed
+num_inds <- which(sapply(1:ncol(train_df), function(x) class(train_df[, x]))!="factor") #index of numerical variables
+train_df %>% 
+  select(num_inds) %>% 
+  gather(Id) %>% 
+  filter(!is.na(value)) %>% 
+  ggplot(aes(x=value)) + geom_histogram(bins=20) + facet_wrap(~Id, scales = 'free_x') #histograms
+
+### Fit exponential distribution to OpenPorchSF
+lam <- MASS::fitdistr(train_df$OpenPorchSF, "exponential")$estimate %>% unname()
+sim_vals <- rexp(nrow(train_df), lam)
+train_df %>% 
+  mutate(sim_OPSF = sim_vals) %>% 
+  select(Id, sim_OPSF, OpenPorchSF) %>% 
+  gather(Id) %>% 
+  filter(!is.na(value)) %>% 
+  ggplot(aes(x=value)) + geom_histogram(bins=20) + facet_wrap(~Id, scales = 'free_x') #compare histograms
+
+### Theoretical 5th and 95th percentiles
+qexp(p = c(0.05, 0.95), rate = lam)
+
+### Empirical percentiles
+quantile(train_df$OpenPorchSF, c(0.05, 0.95))
+# The fit is clearly not perfect. The empirical distribution seems to have fatter tails.
+
+### Empirical confidence interval for mean, using asymptotic CI based on Fisher information
+xbar <- mean(train_df$OpenPorchSF)
+z <- 1.96
+n <- length(train_df$OpenPorchSF)
+se <- sqrt(xbar/n)
+c(xbar-1.96*se, xbar+1.96*se)
+
+
+### Multiple regression model
+lm_fit <- lm(SalePrice ~ LotArea + Neighborhood + BldgType + OverallCond + GrLivArea + YrSold, data=train_df)
+summary(lm_fit)
+
+# Check residuals
+lm_df <- augment(lm_fit)
+    
+# residual plot
+lm_df %>% 
+  ggplot(aes(x = .fitted, y = .resid)) + 
+  geom_point() + 
+  geom_hline(yintercept = 0)
+
+# residual histogram
+lm_df %>% 
+  ggplot(aes(.resid)) + 
+  geom_histogram(bins = 10)
+
+# residual qqplot
+lm_df %>% 
+  ggplot(aes(sample = .resid)) + 
+  stat_qq() + 
+  stat_qq_line()
+
+# Make predictions on test data
+yhats <- predict(lm_fit, newdata = test_df)
+yhat_df <- data.frame(Id = test_df$Id, SalePrice = yhats %>% unname())
+yhat_df %>% head() %>% kable()
+
+```
+
+<br>
+
+The predictions were entered into the competition under "mehtablocker" and received a score of 0.20281.
