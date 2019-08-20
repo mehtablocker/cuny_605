@@ -62,4 +62,5 @@ for (i in 1:trials){
     message(i)}
 }
 
+### Error should be decreasing throughout the training process
 plot(1:length(mse_vec), mse_vec, type="l")
