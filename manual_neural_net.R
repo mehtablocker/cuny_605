@@ -25,7 +25,7 @@ b <- 0.5
 learning_rate <- 0.001
 
 ### Training loop
-trials <- 50000
+trials <- 20000
 mse_vec <- vector()
 
 for (i in 1:trials){
@@ -54,7 +54,7 @@ for (i in 1:trials){
   
   #Keep track of MSE
   if (i %% 1000==0){
-    full_predictions <- cbind(1, X) %*% cbind(c(b, w))
+    full_predictions <- tanh(cbind(1, X) %*% cbind(c(b, w)))
     full_predictions <- 0.5*(full_predictions + 1)   #convert tanh to probability
     y_conv <- 0.5*(y+1)   #convert target from -1/1 back to 0/1
     mse <- mean((full_predictions - y_conv)^2)
