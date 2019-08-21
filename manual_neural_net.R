@@ -15,10 +15,9 @@ tanh_deriv <- function(x){
 
 ### Set up feature matrix, target vector, initial random weights and bias
 X <- adult %>% select(age, fnlwgt, education_num, hours_per_week) %>% as.matrix()
-maxs <- apply(X, 2, max)
-mins <- apply(X, 2, min)
-X <- scale(X, center=mins, scale=maxs-mins)   #normalize the feature matrix
+X <- scale(X)
 y <- adult$target
+y[y==0] <- (-1)
 w <- rep(0.5, ncol(X))
 b <- 0.5
 
@@ -26,7 +25,7 @@ b <- 0.5
 learning_rate <- 0.001
 
 ### Training loop
-trials <- 100000
+trials <- 50000
 mse_vec <- vector()
 
 for (i in 1:trials){
@@ -56,11 +55,13 @@ for (i in 1:trials){
   #Keep track of MSE
   if (i %% 1000==0){
     full_predictions <- cbind(1, X) %*% cbind(c(b, w))
-    mse <- mean((full_predictions - y)^2)
+    full_predictions <- 0.5*(full_predictions + 1)   #convert tanh to probability
+    y_conv <- 0.5*(y+1)   #convert target from -1/1 back to 0/1
+    mse <- mean((full_predictions - y_conv)^2)
     mse_vec <- c(mse_vec, mse)
     
     message(i)}
 }
 
-### Error should be decreasing throughout the training process
+### Error should decrease through the training process
 plot(1:length(mse_vec), mse_vec, type="l")
